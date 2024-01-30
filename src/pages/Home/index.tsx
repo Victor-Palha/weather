@@ -16,6 +16,7 @@ export type ListSearch = {
 }
 
 export function Home(){
+    const [loading, setLoading] = useState(false)
     const [search, setSearch] = useState('')
     const [listSearch, setListSearch] = useState<ListSearch[]>([])
 
@@ -24,8 +25,8 @@ export function Home(){
         setListSearch(response.data)
     }
     useEffect(()=>{
-        if(search.length > 0) handleSearch(search)
-    }, [search])
+        if(search.length > 0 && loading === false) handleSearch(search)
+    }, [search, loading])
     return (
         <main>
             <Header/>
@@ -38,8 +39,24 @@ export function Home(){
                     onChange={(e)=>{
                         setSearch(e.target.value)
                     }}
-                    listSearch={listSearch}
                 />
+                {listSearch.length > 0 && (
+                    <ul className="mt-[8px] gap-1 flex flex-col">
+                        {listSearch.map((item, index)=>(
+                            <li 
+                                key={index} 
+                                className="bg-ngray-600 text-ngray-100 first:rounded-t-lg last:rounded-b-lg px-[20px] py-[17px] cursor-pointer hover:bg-ngray-700"
+                                onClick={()=>{
+                                    setSearch(`${item.name}, ${item.state} - ${item.country}`)
+                                    setLoading(true)
+                                    setListSearch([])
+                                }}
+                            >
+                                    {item.name}, {item.state} - {item.country}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
         </main>
     )
