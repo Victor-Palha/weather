@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Header } from "../../components/Header";
 import { Input } from "../../components/Input";
 import { api } from "../../config/api";
+import { Weather } from "../../components/Waether";
 
 export type ListSearch = {
     name: string
@@ -14,8 +15,13 @@ export type ListSearch = {
     country: string
     state: string
 }
+type Coords = {
+    lat: number
+    lon: number
+}
 
 export function Home(){
+    const [coords, setCoords] = useState<Coords>({} as Coords)
     const [loading, setLoading] = useState(false)
     const [search, setSearch] = useState('')
     const [listSearch, setListSearch] = useState<ListSearch[]>([])
@@ -24,13 +30,19 @@ export function Home(){
         const response = await api(`/geo/1.0/direct?q=${search}&limit=5&appid=d35d0d0b11f7be00f41194c41b405857`)
         setListSearch(response.data)
     }
+    function handleCoords(item: ListSearch){
+        setCoords({
+            lat: item.lat,
+            lon: item.lon
+        })
+    }
     useEffect(()=>{
         if(search.length > 0 && loading === false) handleSearch(search)
     }, [search, loading])
     return (
         <main>
             <Header/>
-            <div className="flex flex-col justify-center w-full items-center">
+            <div className="flex flex-col justify-center w-full items-center mb-5">
                 <h1 className="font-bold text-ngray-100 text-[40px]">Boas vindas ao <span className="text-blue-light">TypeWeather</span></h1>
                 <h2 className="text-ngray-200 text-[22px] mb-10">Escolha um local para ver a previsão do tempo</h2>
                 <Input 
@@ -50,6 +62,7 @@ export function Home(){
                                     setSearch(`${item.name}, ${item.state} - ${item.country}`)
                                     setLoading(true)
                                     setListSearch([])
+                                    handleCoords(item)
                                 }}
                             >
                                     {item.name}, {item.state} - {item.country}
@@ -58,6 +71,9 @@ export function Home(){
                     </ul>
                 )}
             </div>
+            {coords.lat && coords.lon && (
+                <Weather lat={coords.lat} lon={coords.lon} city={search}/>
+            )}
         </main>
     )
 }
