@@ -47,7 +47,7 @@ export function Weather({lat, lon, city}: WeatherProps){
                     >
                         <div>
                             <p className="text-ngray-100 text-lg font-bold">{city}</p>
-                            <span className="text-ngray-100 text-lg">{format(time, "Do 'de' MMMM yyyy", {locale: ptBR})}</span>
+                            <span className="text-ngray-100 text-lg">{format(time, "dd 'de' MMMM yyyy", {locale: ptBR})}</span>
                         </div>
                         <div className="flex justify-between">
                             <div>
